@@ -161,6 +161,9 @@ public class Class1 {
         
         int[] test = new int[]{9,8,7,6,5,4,3,4,5,6,7,8,9};
         System.out.println(findInOrdinalArray3(test));
+
+        String[] split = "123".split(",");
+        System.out.println(Arrays.toString(split));
     }
 
     // 3 7 2 5 4
