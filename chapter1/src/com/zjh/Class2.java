@@ -85,7 +85,15 @@ public class Class2 {
         // System.out.println(Arrays.toString(test));
         // System.out.println(Arrays.toString(test));
 
-        System.out.println(findMinSum(new int[]{1,2,1,3},0,3));
+        // System.out.println(findMinSum(new int[]{1,2,1,3},0,3));
+
+        // int[] ints = {3,2};
+        // netherlandsFlag2(ints,2);
+        // System.out.println(Arrays.toString(ints));
+        
+        int[] test = new int[]{3,5,6,7,10,7,6};
+        quickSort(test,0,test.length-1);
+        System.out.println(Arrays.toString(test));
     }
 
     /**
@@ -135,4 +143,88 @@ public class Class2 {
         return res;
     }
 
+    /**
+     * 荷兰国旗问题1：
+     * 给定一个数组arr和一个数num，请把arr中小于等于num的的数放在数组的左边，大于num的数放在右边
+     * 要求：空间复杂度O(1),时间复杂度O(n)
+     * 
+     * arr=[5,4,2,1],num=2
+     */
+    public static void netherlandsFlag1(int[] arr,int num){
+        int index = 0;
+        for (int i = 0; i < arr.length;) {
+            if (arr[i] <= num){
+                int temp = arr[index];
+                arr[index] = arr[i];
+                arr[i] = temp;
+                index++;
+            }
+            i++;
+        }
+    }
+
+    /**
+     * 荷兰国旗问题2：
+     * 给定一个数组arr和一个数num，请把arr中小于num的的数放在数组的左边，等于num的数放在数组的中间，大于num的数放在右边
+     * 要求：空间复杂度O(1),时间复杂度O(n)
+     */
+    public static void netherlandsFlag2(int[] arr,int num){
+        int lIndex = 0,rIndex = arr.length-1;
+        for (int i = 0; i <= rIndex;) {
+            if (arr[i] == num){
+                i++;
+            }else if (arr[i] < num){
+                int temp = arr[lIndex];
+                arr[lIndex] = arr[i];
+                arr[i] = temp;
+                lIndex++;
+                i++;
+            }else {
+                int temp = arr[rIndex];
+                arr[rIndex] = arr[i];
+                arr[i] = temp;
+                rIndex--;
+            }
+        }
+    }
+
+    /**
+     * 快排3.0
+     */
+    public static void quickSort(int[] arr,int L, int R){
+        if (L < R){
+            swap(arr,L + (int)Math.random()*(R-L+1),R);
+            int[] p = partition(arr,L,R);
+            quickSort(arr,L,p[0]-1);
+            quickSort(arr,p[1]+1,R);
+        }
+    }
+
+    
+    private static int[] partition(int[] arr, int l, int r) {
+        int lIndex = l-1,rIndex = r;    // 左右边界
+        for (int i = l; i < rIndex;) {
+            if (arr[i] == arr[r]){
+                i++;
+            }else if (arr[i] < arr[r]){
+                swap(arr,++lIndex,i++);
+            }else {
+                swap(arr,--rIndex,i);
+            }
+        }
+        swap(arr,r,rIndex);
+        return new int[]{lIndex + 1,rIndex};
+    }
+
+    /**
+     * 交换数组中的两个数
+     * @param arr
+     * @param x
+     * @param y
+     */
+    private static void swap(int[] arr, int x, int y) {
+        int temp = arr[x];
+        arr[x] = arr[y];
+        arr[y] = temp;
+    }
 }
