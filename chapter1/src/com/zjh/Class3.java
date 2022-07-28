@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 /**
@@ -145,6 +148,11 @@ public class Class3 {
         //     System.out.println(priorityQueue.poll());
         // }
         int[] test = new int[]{4,2,3,1,2,6,5,8,1,9};
+        Arrays.sort(test);
+        
+        Integer[] test1 = new Integer[]{new Integer(1),new Integer(2)};
+        Arrays.sort(test1);
+
         // heapKSort(test,123);
         // System.out.println(Arrays.toString(test));
         
@@ -175,6 +183,17 @@ public class Class3 {
         }
 
         System.out.println(new BigDecimal("-0.01").abs());
+
+        Map<String,Integer> map = new HashMap<>();
+        Integer integer = new Integer(1);
+        integer++;
+        System.out.println(integer);
+        int a = 1;
+        map.put("1",a);
+        Integer integer1 = map.get("1");
+        integer1++;
+        System.out.println(a);
+        System.out.println(map.get("1"));
     }
 }
 
@@ -194,5 +213,13 @@ class Student{
                 "id=" + id +
                 ", age=" + age +
                 '}';
+    }
+}
+
+class TestComparator implements Comparator{
+
+    @Override
+    public int compare(Object o1, Object o2) {
+        return 0;
     }
 }
