@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 /**
  * Class3 class
@@ -159,25 +160,29 @@ public class Class3 {
         // createMinHeap(test);
         // System.out.println(Arrays.toString(test));
 
-        Student student1 = new Student(1,4);
-        Student student2 = new Student(2,3);
-        Student student3 = new Student(3,2);
-        Student student4 = new Student(4,1);
+        Student student1 = new Student(1,4,"aa");
+        Student student2 = new Student(2,4,"aa");
+        Student student3 = new Student(3,3,"aa");
+        Student student4 = new Student(4,5,"bb");
 
         List<Student> studentList = new ArrayList<>();
         studentList.add(student1);
         studentList.add(student2);
         studentList.add(student3);
         studentList.add(student4);
-        
-        Collections.sort(studentList, new Comparator<Student>() {
-            // comparator中的compare方法定义了排序的规则
-            // 当返回负数时认为o1排在前面，当返回正数时认为o2排在前面，当返回0时认为谁前谁后不重要
-            @Override
-            public int compare(Student o1, Student o2) {
-                return o1.age - o2.age;
-            }
-        });
+
+        Map<Integer, Map<String, List<Student>>> collect1 = studentList.stream().collect(Collectors.groupingBy(Student::getAge, Collectors.groupingBy(Student::getName)));
+
+        Map<Integer, List<Student>> collect = studentList.stream().collect(Collectors.groupingBy(Student::getAge));
+
+        // Collections.sort(studentList, new Comparator<Student>() {
+        //     // comparator中的compare方法定义了排序的规则
+        //     // 当返回负数时认为o1排在前面，当返回正数时认为o2排在前面，当返回0时认为谁前谁后不重要
+        //     @Override
+        //     public int compare(Student o1, Student o2) {
+        //         return o1.age - o2.age;
+        //     }
+        // });
         for (Student student : studentList) {
             System.out.println(student);
         }
@@ -201,10 +206,13 @@ class Student{
     public int id;
     
     public int age;
+    
+    public String name;
 
-    public Student(int id, int age) {
+    public Student(int id, int age,String name) {
         this.id = id;
         this.age = age;
+        this.name = name;
     }
 
     @Override
@@ -212,7 +220,32 @@ class Student{
         return "Student{" +
                 "id=" + id +
                 ", age=" + age +
+                ", name='" + name + '\'' +
                 '}';
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
 

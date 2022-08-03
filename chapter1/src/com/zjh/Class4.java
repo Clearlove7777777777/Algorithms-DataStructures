@@ -1,9 +1,11 @@
 package com.zjh;
 
 import javax.lang.model.element.VariableElement;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -349,8 +351,78 @@ public class Class4 {
      * @return
      */
     public static SingleNode findIntersect(SingleNode head1,SingleNode head2){
-        
-        return null;
+        SingleNode ringEntrance1 = hasRing2(head1);
+        SingleNode ringEntrance2 = hasRing2(head2);
+        SingleNode n1 = head1;
+        SingleNode n2 = head2;
+        // 两个链表都无环
+        if (ringEntrance1 == null && ringEntrance2 == null){
+            int lengthDifference = 0;   // 长度的差值
+            while(n1.next != null){
+                n1 = n1.next;
+                lengthDifference++;
+            }
+            while(n2.next != null){
+                n2 = n2.next;
+                lengthDifference--;
+            }
+            if (n1 != n2){
+                // 如果两个无环链表尾结点不是同一个，那么两链表不可能相交（若两单链表相交，则从相交位置开始必将一路重合至末尾结点）
+                return null;
+            }
+            n1 = lengthDifference > 0 ? head1 : head2;  // n1是长的，n2是短的
+            n2 = n1 == head1 ? head2 : head1;
+            lengthDifference = Math.abs(lengthDifference);
+            while (lengthDifference > 0){
+                n1 = n1.next;
+                lengthDifference--;
+            }
+            while (n1 != n2){
+                n1 = n1.next;
+                n2 = n2.next;
+            }
+            return n1;
+        }
+        // 一个链表有环，另一个链表无环，这种情况不可能相交
+        if ((ringEntrance1 == null && ringEntrance2 !=null) || (ringEntrance2 == null && ringEntrance1 !=null))
+            return null;
+        // 两个都有环 入环节点是同一个
+        if (ringEntrance1 == ringEntrance2){
+            int lengthDifference = 0;   // 长度的差值
+            while(n1 != ringEntrance1 && n1.next != ringEntrance1){
+                n1 = n1.next;
+                lengthDifference++;
+            }
+            while(n2 != ringEntrance1 && n2.next != ringEntrance1){
+                n2 = n2.next;
+                lengthDifference--;
+            }
+            n1 = lengthDifference > 0 ? head1 : head2;  // n1是长的，n2是短的
+            n2 = n1 == head1 ? head2 : head1;
+            lengthDifference = Math.abs(lengthDifference);
+            while (lengthDifference > 0){
+                n1 = n1.next;
+                lengthDifference--;
+            }
+            while (n1 != n2){
+                n1 = n1.next;
+                n2 = n2.next;
+            }
+            return n1;
+        }
+        // 两个都有环，但是入环节点不是同一个
+        SingleNode circleStart = ringEntrance2;
+        boolean flag = true;    // 是否是两个独立的环
+        do {
+            circleStart = circleStart.next;
+            if (circleStart == ringEntrance1){
+                flag = false;
+                break;
+            }
+        }while (circleStart != ringEntrance2);
+        if (flag)
+            return null;
+        return ringEntrance1;
     } 
     
     public static void main(String[] args) {
@@ -368,14 +440,25 @@ public class Class4 {
         SingleNode singleNode1 = new SingleNode(1);
         SingleNode singleNode2 = new SingleNode(2);
         SingleNode singleNode3 = new SingleNode(3);
-        // SingleNode singleNode4 = new SingleNode(1);
-
+        SingleNode singleNode4 = new SingleNode(4);
+        SingleNode singleNode5 = new SingleNode(5);
         singleNode1.next = singleNode2;
         singleNode2.next = singleNode3;
-        singleNode3.next = null;
-        System.out.println(hasRing2(singleNode1));
+        singleNode3.next = singleNode4;
+        singleNode4.next = singleNode5;
+        singleNode5.next = singleNode3;
+        
+        SingleNode singleNode10 = new SingleNode(10);
+        SingleNode singleNode11 = new SingleNode(11);
+        singleNode10.next = singleNode11;
+        singleNode11.next = singleNode3;
+        
+        System.out.println(findIntersect(singleNode1,singleNode5));
 
-
+        Set<Long> set = new HashSet<>();
+        set.add(1l);
+        set.add(2l);
+        List<Long> longs = Arrays.asList(set.toArray(new Long[0]));
         // printSingleNode(singleNode1);
         // singleNode1 = singleNode2;
         // singleNode2 = singleNode3;
