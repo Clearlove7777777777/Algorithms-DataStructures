@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
@@ -59,7 +60,22 @@ public class Class6_Graph {
         int[][] mst = new int[][]{new int[]{1,2,5},new int[]{2,1,5},new int[]{2,3,4},new int[]{3,2,4},new int[]{3,4,7},new int[]{4,3,7},new int[]{1,3,1000},new int[]{3,1,1000},new int[]{2,4,1},new int[]{4,2,1},new int[]{1,4,100},new int[]{4,1,100}};
         Graph graph2 = createGraph(mst);
         System.out.println();
-        System.out.println(mst(graph2));
+        System.out.println(kmst(graph2));
+        System.out.println(pmst(graph2));
+
+        // dijkstra
+        int[][] dijkstra = new int[][]{new int[]{1,2,5},new int[]{2,5,3},new int[]{5,3,6},new int[]{3,4,100},new int[]{4,1,4},new int[]{2,6,1},new int[]{6,4,6},new int[]{6,1,2},new int[]{6,3,3},new int[]{2,3,7},
+                new int[]{2,1,5},new int[]{5,2,3},new int[]{3,5,6},new int[]{4,3,100},new int[]{1,4,4},new int[]{6,2,1},new int[]{4,6,6},new int[]{1,6,2},new int[]{3,6,3},new int[]{3,2,7}
+                            };
+        Graph dijkstrag = createGraph(dijkstra);
+        GraphNode root = null;
+        for (GraphNode node : dijkstrag.nodes.values()) {
+            if (node.value == 1) {
+                root = node;
+                break;
+            }
+        }
+        Map<GraphNode, DijkstraHelp> dijkstra1 = dijkstra(dijkstrag, root);
     }
     /**
      * 根据二维数组创建图
@@ -177,8 +193,9 @@ public class Class6_Graph {
      */
     /**
      * K算法：对边按照权值从小到大进行遍历，每加入一条边判断是否构成环，若构成则舍弃，不构成则选用 
+     * 并查集
      */
-    public static List<Edge> mst(Graph graph){
+    public static List<Edge> kmst(Graph graph){
         List<Edge> res = new ArrayList<>();
         List<List<GraphNode>> list = new ArrayList<>();
         for (GraphNode node : graph.nodes.values()) {
@@ -220,6 +237,110 @@ public class Class6_Graph {
         }
         return res;
     }
+
+    public static List<Edge> kmst2(Graph graph){
+        List<Edge> res = new ArrayList<>();
+        Map<GraphNode,Integer> map = new HashMap<>();
+        int i = 0;
+        for (GraphNode node : graph.nodes.values()) {
+            map.put(node,i);
+            i++;
+        }
+        // 以下思路是不可行的
+        List<Edge> edgeList = graph.edges.stream().sorted(Comparator.comparingInt(o -> o.weight)).collect(Collectors.toList());
+        for (Edge edge : edgeList) {
+            if (map.get(edge.from) != map.get(edge.to)) {
+                Integer merge = map.get(edge.from) < map.get(edge.to) ? map.get(edge.from) : map.get(edge.to);
+                map.put(edge.from,merge);
+                map.put(edge.to,merge);
+                res.add(edge);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * p算法求最小生成树
+     * 
+     * 任意取一点，得到其相邻的所有边，选择最小权值边的连通点，判断其是否已被连通过，若没有则选用该边
+     * @param graph
+     * @return
+     */
+    public static Set<Edge> pmst(Graph graph){
+        PriorityQueue<Edge> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight));
+        Set<Edge> res = new HashSet<>();
+        Set<GraphNode> set = new HashSet<>();   // 到过的点
+
+        // 随便取一个点   整体的for循环是为了解决若图结构不是整体联通的情况（森林结构），如果案例是整体连通的普通图结构，肯定是任意取一点一次性在底下的while里跑完了不需要这个for
+        for (GraphNode node : graph.nodes.values()) {   
+            if (!set.contains(node)){
+                set.add(node);
+                queue.addAll(node.edges);
+                while (!queue.isEmpty()){
+                    Edge edge = queue.poll();   // 弹出的边是队列中最小的（由优先级队列保证）
+                    GraphNode toNode = edge.to; // 可能的一个新的点
+                    if (!set.contains(toNode)) {
+                        set.add(toNode);
+                        res.add(edge);
+                        queue.addAll(toNode.edges);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 迪杰斯特拉算法(Dijkstra)是由荷兰计算机科学家狄克斯特拉于1959年提出的，因此又叫狄克斯特拉算法。 是从一个顶点到其余各顶点的最短路径算法，解决的是有权图中最短路径问题
+     * 要求没有负数权值边（更准确的说应该是可以有权值为负数的边，但不能有累加和为负数的环，因为如果有为负数的环，原始点到任意点都可以做到负无穷，一直绕圈刷就行了）
+     * @param graph
+     * @return
+     */
+    public static Map<GraphNode,DijkstraHelp> dijkstra(Graph graph,GraphNode root){
+        // 记录距离
+        Map<GraphNode,DijkstraHelp> map = new HashMap<>();
+        for (GraphNode graphNode : graph.nodes.values()) {
+            map.put(graphNode,new DijkstraHelp(graphNode,Integer.MAX_VALUE));
+        }
+        DijkstraHelp rootHelp = new DijkstraHelp(root,0);
+        map.put(root, rootHelp);
+        // for (Edge edge : root.edges) {
+        //     map.put(edge.to, new DijkstraHelp(edge.to,edge.weight));
+        // }
+        PriorityQueue<DijkstraHelp> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o.length));
+        // 只要还有点没有被使用过
+        while (map.values().stream().anyMatch(dijkstraHelp -> !dijkstraHelp.used)){
+            for (Map.Entry<GraphNode, DijkstraHelp> entry : map.entrySet()) {
+                if (!entry.getValue().used) {
+                    queue.add(entry.getValue());
+                }
+            }
+            DijkstraHelp dijkstraHelp = queue.poll();   // 当前选用的最小的
+            dijkstraHelp.used = true;
+            for (Edge edge : dijkstraHelp.graphNode.edges) {
+                if (map.get(edge.to).length > (dijkstraHelp.length + edge.weight)) {
+                    map.get(edge.to).length = dijkstraHelp.length + edge.weight;
+                    map.put(edge.to,map.get(edge.to));
+                }
+            }
+            queue.clear();
+        }
+        return map;
+    }
+    
+    static class DijkstraHelp{
+        GraphNode graphNode;
+        // root节点到当前节点的距离
+        Integer length;
+        Boolean used = false;
+
+        public DijkstraHelp(GraphNode graphNode,Integer length) {
+            this.graphNode = graphNode;
+            this.length = length;
+        }
+    }
+        
+    
     
     
 }
