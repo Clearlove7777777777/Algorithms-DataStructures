@@ -31,6 +31,10 @@ public class Class7_Greedy {
         System.out.println(maxProfit(projects, 1, 100));
 
         System.out.println(quickMid(new int[]{1, 2, 3}));
+        long start = System.currentTimeMillis();
+        System.out.println(nQueen(14));
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
     }
 
     /**
@@ -159,6 +163,8 @@ public class Class7_Greedy {
      * n=1,返回1
      * n=2或3,2皇后和3皇后问题无论怎么摆都不行，返回0.
      * n=8,返回92。
+     * 
+     * 时间复杂度是O(n^n)
      */
     public static int nQueen(int n) {
         // 记录摆放好的皇后的位置 record[0]=1表示在(0,1)出放置了皇后
@@ -184,13 +190,17 @@ public class Class7_Greedy {
      * 判断在x,y位置放置皇后是否合法
      *
      * @param record
-     * @param i
-     * @param j
+     * @param i 行坐标
+     * @param j 列坐标
      * @return
      */
     public static boolean queenValid(int[] record, int i, int j) {
-        for(int k = 0;k<i;k++){
-            if (j == record[k] || Math.abs(record[k] - j) == Math.abs(i - k)){
+        // 因为是按照行进行遍历的，因此无需考虑行是否重复的问题，换言之我们只会在同一行放一个皇后
+        for (int k = 0; k < i; k++) {   // 因为是一行行从上到下放的，因此只需要判断当前行的前面行所放置的皇后是否与该坐标有冲突
+            if (j == record[k] // 列是否相等
+                    || 
+                    Math.abs(record[k] - j) == Math.abs(i - k)  // |皇后列-测试列| == |皇后行-测试行| 是否在一斜线上
+                ) {
                 return false;
             }
         }

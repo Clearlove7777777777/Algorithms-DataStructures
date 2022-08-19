@@ -3,10 +3,8 @@ package com.zjh;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -128,9 +126,13 @@ public class Class3 {
     
 
     public static void main(String[] args) {
-        // int[] test = new int[]{3,2,3,4,7,6,9};
-        // heapSort(test);
-        // System.out.println(Arrays.toString(test));
+        int[] minheaparr = new int[]{8,9,1,4};
+        createMinHeap(minheaparr);
+        
+        
+        int[] test = new int[]{3,2,3,4,7,6,9};
+        heapSort(test);
+        System.out.println(Arrays.toString(test));
         //
         // PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
         // priorityQueue.add(3);
@@ -148,8 +150,8 @@ public class Class3 {
         // while (!priorityQueue.isEmpty()) {
         //     System.out.println(priorityQueue.poll());
         // }
-        int[] test = new int[]{4,2,3,1,2,6,5,8,1,9};
-        Arrays.sort(test);
+        // int[] test = new int[]{4,2,3,1,2,6,5,8,1,9};
+        // Arrays.sort(test);
         
         Integer[] test1 = new Integer[]{new Integer(1),new Integer(2)};
         Arrays.sort(test1);

@@ -32,7 +32,8 @@ public class Class4 {
 
     /**
      * 反转单链表
-     * @param  1->2->3->4
+     * 1->2->3->4
+     * @param
      * @return
      */
     public static SingleNode reverse(SingleNode head){
@@ -54,6 +55,7 @@ public class Class4 {
     /**
      * 反转双链表
      * @param head    <-1->  <-2->  <-3->
+     *                
      * @return
      */
     public static DoubleSideNode reverse(DoubleSideNode head){
