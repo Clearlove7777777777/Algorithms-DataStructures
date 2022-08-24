@@ -1,10 +1,13 @@
 package com.zjh;
 
+import javafx.beans.binding.When;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * Class8 class
@@ -23,6 +26,19 @@ public class Class8 {
         // System.out.println(countSubsequence("pcrdhwdxmqdznbenhwjsenjhvulyve"));
         printSubsequence2("abc");
 
+        System.out.println(gameScore(new int[]{1, 2, 100, 4}));
+
+        Stack<Integer> stack = new Stack<>();
+        stack.push(3);
+        stack.push(2);
+        stack.push(1);
+        System.out.println(stack);
+        reverseStack(stack);
+        System.out.println(stack);
+
+        System.out.println(getConvertCount("1110"));
+
+        System.out.println(bag(new int[]{3, 2, 5}, new int[]{3, 2, 5}, 6));
     }
 
     /**
@@ -196,7 +212,7 @@ public class Class8 {
 
     /**
      * swap arr[j] arr[i]
-     * 
+     *
      * @param chars
      * @param j
      * @param i
@@ -216,8 +232,7 @@ public class Class8 {
      * 开始时，玩家A只能拿走1或4。如果开始时玩家A拿走1，则排列变为[2,100,4]，接下来
      * 玩家B可以拿走2或4，然后继续轮到玩家A.
      * 如果开始时玩家A拿走4，则排列变为[1,2,100]，接下来玩家B可以拿走1或100,
-     * 然后继
-     * 续轮到玩家A..
+     * 然后继续轮到玩家A..
      * 玩家A作为绝顶聪明的人不会先拿4，因为拿4之后，玩家B将拿走100。所以玩家A会先拿1,
      * 让排列变为[2,100,4]，接下来玩家B不管怎么选，100都会被玩家A拿走。玩家A会获胜，
      * 分数为101。所以返回101.
@@ -225,13 +240,150 @@ public class Class8 {
      * 开始时，玩家A不管拿1还是2，玩家B作为绝顶聪明的人，
      * 都会把100拿走。玩家B会获胜，
      * 分数为100。所以返回100。
+     *
      * @param cards
      * @return 获胜者的分数
      */
-    public static int gameScore(int[] cards){
-        return 0;   
+    public static int gameScore(int[] cards) {
+        if (cards == null || cards.length == 0)
+            return 0;
+        return Math.max(first(cards, 0, cards.length - 1), second(cards, 0, cards.length - 1));
     }
 
+    /**
+     * 先手函数
+     *
+     * @param cards
+     * @param l
+     * @param r
+     * @return
+     */
+    private static int first(int[] cards, int l, int r) {
+        if (l == r)
+            return Math.max(cards[l], cards[r]);
+        return Math.max(cards[l] + second(cards, l + 1, r), cards[r] + second(cards, l, r - 1));
+    }
+
+    /**
+     * 后手函数
+     *
+     * @param cards
+     * @param l
+     * @param r
+     * @return
+     */
+    private static int second(int[] cards, int l, int r) {
+        if (l == r)
+            return 0;
+        return Math.min(first(cards, l + 1, r), first(cards, l, r - 1)); // 后手肯定是最差情况，因为是对方决定的，对方肯定会让自己拿到最好的牌，而后手肯定拿到的是最差的牌
+    }
+
+    /**
+     * 给你一个栈，请你逆序这个栈，不能申请额外的数据结构，只能使用递归函数。
+     * 如何实现？
+     */
+    public static void reverseStack(Stack<Integer> stack) {
+        if (stack.isEmpty()) {
+            return;
+        }
+        int i = getStackLast(stack);
+        reverseStack(stack);
+        stack.push(i);
+    }
+
+    /**
+     * 移除栈底元素并返回
+     *
+     * @param stack
+     * @return
+     */
+    private static int getStackLast(Stack<Integer> stack) {
+        int result = stack.pop();
+        if (stack.isEmpty()) {
+            return result;
+        } else {
+            int last = getStackLast(stack);
+            stack.push(result);
+            return last;
+        }
+    }
+
+    /**
+     * 规定1和A对应、2和B对应、3和C对应...26和Z对应
+     * 那么一个数字字符串比如"111"，就可以转化为"AAA"、"KA"和"AK"。
+     * 给定一个只有数字字符组成的字符串str,返回有多少种转化结果。
+     */
+    public static int getConvertCount(String str) {
+        if (str == null || str.length() == 0) {
+            return 0;
+        }
+        return process(str.toCharArray(), 0);
+    }
+
+    /**
+     * 本质就是只需要决定是选当前字符还是选当前字符和后一个字符
+     *
+     * @param chs
+     * @param i
+     * @return
+     */
+    public static int process(char[] chs, int i) {
+        if (i == chs.length) {
+            return 1;   // 走到最后了，完成了一组可能
+        }
+        if (chs[i] == '0') {
+            return 0;   // 单独选了0，由于0没有任何值与其对应，因此直接废弃该种尝试（之前做的决定让我现在陷入一种没法转换的状态，所以直接下一种）
+        }
+        // 只有1和2有选后面连接着的字符串的可能
+        if (chs[i] == '1') {
+            int res = process(chs, i + 1); // 选自己
+            if (i < chs.length - 1) {
+                res += process(chs, i + 2);// 选自己和后面的一个字符
+            }
+            return res;
+        }
+        if (chs[i] == '2') {
+            int res = process(chs, i + 1);// 选自己
+            if (i < chs.length - 1 && (chs[i + 2] >= '0' && chs[i + 2] <= '6')) {// 如果是2的话后面的字符需要是0-6才可以组合
+                res += process(chs, i + 2);
+            }
+            return res;
+        }
+        // 当前字符3-9
+        return process(chs, i + 1);
+    }
+
+    /**
+     * 给定两个长度都为N的数组weights和values,weights[i]和values[i]分别代表
+     * i号物品的重量和价值。给定一个正数bag,表示一个载重bag的袋子，你装的物
+     * 品不能超过这个重量。返回你能装下最多的价值是多少？
+     */
+    public static int bag(int[] weights, int[] values, int bag) {
+        if (weights == null || weights.length == 0) {
+            return 0;
+        }
+        return bugProcess(weights, values, bag, 0);
+    }
+
+
+    /**
+     * 从左往右试，要或不要
+     *
+     * @param weights
+     * @param values
+     * @param i
+     * @return
+     */
+    public static int bugProcess(int[] weights, int[] values, int bag, int i) {
+        if (i == weights.length)
+            return 0;
+        int needThis = 0;
+        if (bag - weights[i] >= 0) {   // 如果当前背包还能装下i号货物的话才有选i这条路
+            needThis += values[i];
+            needThis += bugProcess(weights, values, bag - weights[i], i + 1);   // 选i号货物
+        }
+        int notNeedThis = 0;
+        notNeedThis += bugProcess(weights, values, bag, i + 1);     // 不选i号货物
+        return Math.max(needThis, notNeedThis);
+    }
 }
-
-
