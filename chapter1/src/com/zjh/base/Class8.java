@@ -1,4 +1,4 @@
-package com.zjh;
+package com.zjh.base;
 
 import javafx.beans.binding.When;
 

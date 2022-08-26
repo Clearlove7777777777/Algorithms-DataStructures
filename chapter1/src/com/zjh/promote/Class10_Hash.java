@@ -1,4 +1,4 @@
-package com.zjh;
+package com.zjh.promote;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -63,7 +63,7 @@ public class Class10_Hash {
      *      因此，布隆过滤器的失误率与bitmap的长度以及数据量是息息相关的，而k的大小也需要与样本量有关
      *      样本量为N不变的情况下，失误率P与m、k的关系  <img：boloom.png>
      *      **P与m成反比例关系，m越大，失误率越低，但是随着m的逐渐增大，P下降的幅度越来越缓慢，性价比低**
-     *      **P与k：k在一开始增大时P会有一个较快速下降过程，但是随着k逐渐增大，bitmap会被急速耗尽，使得整个bitmap趋于全1，因此k的越来越大会导致P急速上升并最终失误率达到100%**
+     *      **P与k的关系：k在一开始增大时P会有一个较快速下降过程，但是随着k逐渐增大，bitmap会被急速耗尽，使得整个bitmap趋于全1，因此k的越来越大会导致P急速上升并最终失误率达到100%**
      *      
      * 布隆过滤器的失误率P、样本量N、哈希函数个数k、数组长度m具有函数关系<img: boloom_function.png>
      * 
