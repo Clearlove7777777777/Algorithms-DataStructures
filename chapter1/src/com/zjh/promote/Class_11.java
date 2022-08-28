@@ -1,8 +1,10 @@
 package com.zjh.promote;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * Class_11 class
@@ -73,6 +75,18 @@ public class Class_11 {
                 new int[]{1, 0, 1, 1, 0}
         };
         System.out.println(getIsLandCount(matrix));
+        
+        // 并查集
+        List<String> list = Arrays.asList("1", "2", "3", "4");
+        DisjointSet<String> disjointSet = new DisjointSet<>(list);
+        System.out.println(disjointSet.isSameSet("1", "2"));
+        disjointSet.union("1","2");
+        System.out.println(disjointSet.isSameSet("1", "2"));
+        System.out.println(disjointSet.isSameSet("1", "3"));
+        disjointSet.union("1","3");
+        System.out.println(disjointSet.isSameSet("1", "3"));
+        System.out.println(disjointSet.isSameSet("2", "3"));
+
     }
 }
 
@@ -137,8 +151,15 @@ class DisjointSet<V>{
      * @return
      */
     private Element<V> findHead(Element<V> element) {
+        // 记录所经过的所有父节点
+        Stack<Element<V>> path = new Stack<>();
         while (element != fatherMap.get(element)){
+            path.push(element);
             element = fatherMap.get(element);
+        }
+        // 加速后续查找代表结点的速
+        while(!path.isEmpty()){
+            fatherMap.put(path.pop(),element);
         }
         return element;
     }
@@ -150,8 +171,17 @@ class DisjointSet<V>{
      * @param v2
      */
     public void union(V v1,V v2){
+        // 两个元素都存在且目前不在一个集合里才进行合并
         if (contains(v1) && contains(v2) && findHead(elementMap.get(v1)) != findHead(elementMap.get(v2))){
-            
+            Element<V> head1 = findHead(elementMap.get(v1));
+            Element<V> head2 = findHead(elementMap.get(v2));
+            if (sizeMap.get(head1) >=  sizeMap.get(head2)) {
+                fatherMap.put(head2,head1);
+                sizeMap.put(head1,sizeMap.get(head1) + 1);
+            }else {
+                fatherMap.put(head1,head2);
+                sizeMap.put(head2,sizeMap.get(head2) + 1);
+            }
         }
     }
 
